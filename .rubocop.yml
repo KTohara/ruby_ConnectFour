@@ -17,9 +17,15 @@ Style/BlockDelimiters:
 Layout/MultilineBlockLayout:
   Exclude:
     - "spec/*"
+Layout/BlockAlignment:
+  Exclude:
+    - "spec/*"
+Layout/BlockEndNewline:
+  Exclude:
+    - "spec/*"
 Metrics/AbcSize:
   Exclude:
-    # - "lib/*"
+    - "lib/*"
 Metrics/MethodLength:
   Exclude:
     - "lib/*"

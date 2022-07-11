@@ -7,16 +7,103 @@ describe Board do
   let(:p1) { :black }
   let(:p2) { :red }
 
+  let(:full_column) { [
+    ['', '', p2, '', '', '', ''],
+    ['', '', p2, '', '', '', ''],
+    ['', '', p2, '', '', '', ''],
+    ['', '', p1, '', '', '', ''],
+    ['', '', p1, '', '', '', ''],
+    ['', '', p1, '', '', '', '']
+  ] }
+
   describe '#initialize' do
+    it 'should set @rows to 6' do
+      expect(board.instance_variable_get(:@rows)).to eq(6)
+    end
+
+    it 'should set @cols to 7' do
+      expect(board.instance_variable_get(:@cols)).to eq(7)
+    end
+
     it 'creates a nested array with 42 elements' do
-      board_size = subject.grid.flatten.length
+      board_size = board.grid.flatten.length
       expect(board_size).to eq(42)
     end
 
     it 'should all be empty strings' do
-      board_cells = subject.grid.flatten
+      board_cells = board.grid.flatten
       expect(board_cells).to all(be_empty)
       expect(board_cells).to all(be_a(String))
+    end
+  end
+
+  describe '#add_token' do
+    it 'should take a integer between 1 to 7 as an argument' do
+      expect(board).to receive(:add_token).with(1..7, p1)
+      board.add_token(1..7, p1)
+    end
+
+    context 'when a token is placed on the board' do
+      let(:token_in_col_three) { [
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', p1, '', '', '', '']
+      ] }
+
+      it 'should be placed in the correct column' do
+        # pos = [5, 2]
+        # allow(board).to receive(:check_column).and_return(pos)
+        board.add_token(3, p1)
+        expect(board.grid).to eq(token_in_col_three)
+      end
+    end
+  end
+
+  describe '#find_empty_pos' do
+    it 'should return the first empty x, y coordinate from a given column' do
+      token_in_col_three = [
+        ['', '', '', '', '', '', ''],
+        ['', '', p1, '', '', '', ''],
+        ['', '', p1, '', '', '', ''],
+        ['', '', p1, '', '', '', ''],
+        ['', '', p1, '', '', '', ''],
+        ['', '', p1, '', '', '', '']
+        # 1   2   3   4   5   6   7
+      ]
+      # argument will be received as non-zero index,
+      # but will return in zero index format
+      board.instance_variable_set(:@grid, token_in_col_three)
+      expect(board.find_empty_pos(3)).to eq([0, 2])
+    end
+
+    it 'should place a token on an empty board' do
+      expect(board.find_empty_pos(3)).to eq([5, 2])
+    end
+
+    it 'should return nil if no empty spot is found' do
+      board.instance_variable_set(:@grid, full_column)
+      expect(board.find_empty_pos(3)).to be_nil
+    end
+  end
+
+  describe '#valid_move?' do
+    context 'when argument passed is an integer between 1 to 7' do
+      it 'returns true' do
+        expect(board.valid_move?('5')).to be true
+      end
+
+      it 'returns false when argument is a not a digit' do
+        expect(board.valid_move?('a')).to be false
+        expect(board.valid_move?('!')).to be false
+      end
+    end
+
+    it 'returns false when there is no space in the column' do
+      board.instance_variable_set(:@grid, full_column)
+      expect(board.valid_move?('3')).to be false
     end
   end
 
@@ -91,7 +178,7 @@ describe Board do
 
       it 'should return true' do
         board.instance_variable_set(:@grid, grid)
-        expect(board.draw?).to be true
+        expect(board).to be_draw
       end
     end
 
@@ -107,25 +194,15 @@ describe Board do
 
       it 'should return false' do
         board.instance_variable_set(:@grid, grid)
-        expect(board.draw?).to be false
+        expect(board).not_to be_draw
       end
     end
   end
 
   describe '#empty_board?' do
     context 'when the board is empty' do
-      let(:grid) { [
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '']
-      ] }
-
       it 'should return true' do
-        board.instance_variable_set(:@grid, grid)
-        expect(board.empty_board?).to be true
+        expect(board).to be_empty_board
       end
     end
   end
@@ -146,18 +223,9 @@ describe Board do
       end
     end
 
-    context 'when there is NO row with four-in-a-row' do
-      let(:grid) { [
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '']
-      ] }
-
+    context 'when there is no row with four-in-a-row' do
       it 'returns false' do
-        expect(board.four_in_a_row?(grid)).to_not be true
+        expect(board.four_in_a_row?(board.grid)).to_not be true
       end
     end
   end

@@ -12,6 +12,28 @@ class Board
     @grid = Array.new(@rows) { [''] * @cols }
   end
 
+  def add_token(column, token)
+    row, col = find_empty_pos(column)
+    @grid[row][col] = token
+  end
+
+  def find_empty_pos(num)
+    col = num - 1 # col has to adjust for non-zero index
+    col_check = (0...rows).map { |row| grid[row][col] }
+    return [@rows - 1, col] if col_check.all?(&:empty?)
+    return nil if col_check.none?(&:empty?)
+
+    # adjust row by -1 for slot 'above' the last piece
+    row = col_check.find_index { |cell| !cell.empty? } - 1
+    [row, col]
+  end
+
+  def valid_move?(num)
+    return false unless num.match?(/^[1-7]{1}$/)
+
+    grid.any? { |row| row[num.to_i - 1].empty? }
+  end
+
   def game_over?
     win? || draw?
   end
@@ -36,7 +58,6 @@ class Board
     lower = (0...rows - 3).map do |i|
       (0...rows - i).map { |j| matrix[i + j][j] }
     end
-
     upper = (1...cols - 3).map do |i|
       (0...rows - i + 1).map { |j| matrix[j][i + j] }
     end
@@ -48,7 +69,6 @@ class Board
     upper = (4..rows).map do |i|
       (0...i).map { |j| matrix[i - j - 1][j] }
     end
-
     lower = (0...cols - 4).map do |i|
       (i...rows).map { |j| matrix[j][i - j - 1] }
     end
