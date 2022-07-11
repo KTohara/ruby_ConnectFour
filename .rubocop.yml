@@ -8,3 +8,18 @@ Metrics/BlockLength:
 Layout/LineLength:
   Exclude:
     - "spec/*"
+Style/WordArray:
+  Exclude:
+    - "spec/*"
+Style/BlockDelimiters:
+  Exclude:
+    - "spec/*"
+Layout/MultilineBlockLayout:
+  Exclude:
+    - "spec/*"
+Metrics/AbcSize:
+  Exclude:
+    # - "lib/*"
+Metrics/MethodLength:
+  Exclude:
+    - "lib/*"

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+
 require 'byebug'
 
+# logic for board checking
 class Board
-  attr_reader :rows, :cols, :grid
+  attr_reader :grid, :rows, :cols
 
   def initialize
     @rows = 6
@@ -18,7 +20,7 @@ class Board
     return if empty_board?
 
     cols = grid.transpose
-    diag = diagonal_left(grid)
+    diag = diagonal_left(grid) + diagonal_right(grid)
     four_in_a_row?(grid) || four_in_a_row?(cols) || four_in_a_row?(diag)
   end
 
@@ -32,15 +34,11 @@ class Board
 
   def diagonal_left(matrix)
     lower = (0...rows - 3).map do |i|
-      (0...rows - i).map do |j|
-        matrix[i + j][j]
-      end
+      (0...rows - i).map { |j| matrix[i + j][j] }
     end
-    
-    upper = (1...cols- 3).map do |i|
-      (0...rows - i + 1).map do |j|
-        matrix[j][i + j]
-      end
+
+    upper = (1...cols - 3).map do |i|
+      (0...rows - i + 1).map { |j| matrix[j][i + j] }
     end
 
     lower + upper
@@ -48,15 +46,11 @@ class Board
 
   def diagonal_right(matrix)
     upper = (4..rows).map do |i|
-      (0...i).map do |j|
-        matrix[i - j - 1][j]
-      end
+      (0...i).map { |j| matrix[i - j - 1][j] }
     end
 
-    lower = (0...cols- 4).map do |i|
-      (i...rows).map do |j|
-        matrix[j][i - j - 1]
-      end
+    lower = (0...cols - 4).map do |i|
+      (i...rows).map { |j| matrix[j][i - j - 1] }
     end
 
     upper + lower
@@ -72,18 +66,19 @@ class Board
   end
 end
 
-b = Board.new
-p1 = 'w'
-p2 = 'p'
-grid = [
-[ 0,  1,  2,  3,  4,  5,  6],
-[ 7,  8,  9, 10, 11, 12, 13], 
-[14, 15, 16, 17, 18, 19, 20], 
-[21, 22, 23, 24, 25, 26, 27], 
-[28, 29, 30, 31, 32, 33, 34], 
-[35, 36, 37, 38, 39, 40, 41]]
+# b = Board.new
+# p1 = 'w'
+# p2 = 'p'
+# grid = [
+# [ 0,  1,  2,  3,  4,  5,  6],
+# [ 7,  8,  9, 10, 11, 12, 13],
+# [14, 15, 16, 17, 18, 19, 20],
+# [21, 22, 23, 24, 25, 26, 27],
+# [28, 29, 30, 31, 32, 33, 34],
+# [35, 36, 37, 38, 39, 40, 41]]
 
-p b.diagonal_left(grid)
-p b.diagonal_right(grid)
-p b.four_in_a_row?(b.diagonal_right(grid))
-p b.four_in_a_row?(b.diagonal_left(grid))
+# p b.diagonal_left(grid)
+
+# p b.four_in_a_row?(b.diagonal_right(grid))
+# p b.four_in_a_row?(b.diagonal_left(grid))
+# p b.win?
