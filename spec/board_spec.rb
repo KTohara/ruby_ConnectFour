@@ -48,6 +48,7 @@ describe Board do
   describe '#win?' do
     context 'when there is a row four-in-a-row' do
       it 'returns true' do
+        allow(board).to receive(:empty_board?).and_return(false)
         allow(board).to receive(:four_in_a_row?).once.and_return(true)
         expect(board).to be_win
       end
@@ -55,6 +56,7 @@ describe Board do
 
     context 'when there is a column four-in-a-row' do
       it 'returns true' do
+        allow(board).to receive(:empty_board?).and_return(false)
         allow(board).to receive(:four_in_a_row?).twice.and_return(false, true)
         expect(board).to be_win
       end
@@ -62,6 +64,7 @@ describe Board do
 
     context 'when there is a diagonal four-in-a-row' do
       it 'returns true' do
+        allow(board).to receive(:empty_board?).and_return(false)
         allow(board).to receive(:four_in_a_row?).at_least(3).times.and_return(false, false, true)
         expect(board).to be_win
       end
@@ -71,6 +74,58 @@ describe Board do
       it 'returns false' do
         allow(board).to receive(:four_in_a_row?).exactly(3).times.and_return(false, false, false)
         expect(board).to_not be_win
+      end
+    end
+  end
+
+  describe '#draw' do
+    context 'when the board is full' do
+      let(:grid) { [
+        [p1, p1, p1, p1, p1, p1, p1],
+        [p1, p1, p1, p1, p1, p1, p1],
+        [p1, p1, p1, p1, p1, p1, p1],
+        [p1, p1, p1, p1, p1, p1, p1],
+        [p1, p1, p1, p1, p1, p1, p1],
+        [p1, p1, p1, p1, p1, p1, p1]
+      ] }
+
+      it 'should return true' do
+        board.instance_variable_set(:@grid, grid)
+        expect(board.draw?).to be true
+      end
+    end
+
+    context 'when the board is not full' do
+      let(:grid) { [
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', p1, ''],
+        ['', '', '', '', p2, p2, ''],
+        ['', '', '', p1, p1, p1, p1]
+      ] }
+
+      it 'should return false' do
+        board.instance_variable_set(:@grid, grid)
+        expect(board.draw?).to be false
+      end
+    end
+  end
+
+  describe '#empty_board?' do
+    context 'when the board is empty' do
+      let(:grid) { [
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '']
+      ] }
+
+      it 'should return true' do
+        board.instance_variable_set(:@grid, grid)
+        expect(board.empty_board?).to be true
       end
     end
   end
@@ -126,8 +181,7 @@ describe Board do
       ['y', 'y', 'y', 'y']
     ] }
 
-    it 'returns a nested array with all diagonals from rleft to right' do
-      
+    it 'returns a nested array with all diagonals from left to right' do
       expect(board.diagonal_left(grid)).to match_array(diagonals)
     end
   end

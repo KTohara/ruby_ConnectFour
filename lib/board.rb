@@ -15,14 +15,20 @@ class Board
   end
 
   def win?
+    return if empty_board?
+
     cols = grid.transpose
     diag = diagonal_left(grid)
-
     four_in_a_row?(grid) || four_in_a_row?(cols) || four_in_a_row?(diag)
-    # diag_four? || four_in_a_row?(matrix) || col_four?
   end
 
-  def draw?; end
+  def draw?
+    grid.flatten.none?(&:empty?)
+  end
+
+  def empty_board?
+    grid.flatten.all?(&:empty?)
+  end
 
   def diagonal_left(matrix)
     lower = (0...rows - 3).map do |i|
@@ -58,7 +64,7 @@ class Board
 
   def four_in_a_row?(matrix)
     matrix.each do |rows|
-      rows.each_cons(4).each do |fours|
+      rows.each_cons(4) do |fours|
         return true if fours.uniq.size == 1 && !fours.first.empty?
       end
     end
@@ -67,6 +73,8 @@ class Board
 end
 
 b = Board.new
+p1 = 'w'
+p2 = 'p'
 grid = [
 [ 0,  1,  2,  3,  4,  5,  6],
 [ 7,  8,  9, 10, 11, 12, 13], 
@@ -77,3 +85,5 @@ grid = [
 
 p b.diagonal_left(grid)
 p b.diagonal_right(grid)
+p b.four_in_a_row?(b.diagonal_right(grid))
+p b.four_in_a_row?(b.diagonal_left(grid))
