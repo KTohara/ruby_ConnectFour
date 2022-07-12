@@ -15,10 +15,10 @@ class Player
   @tokens = %w[red blue yellow green black]
 
   def self.select_name(player_num)
-    puts message(:prompt_name, player_num)
+    prompt_name(player_num)
     name = gets.chomp
     until Player.valid_name?(name)
-      puts message(:error_name, player_num)
+      error_name(player_num)
       name = gets.chomp
     end
     name
@@ -29,17 +29,17 @@ class Player
   end
 
   def self.select_token_color(player_name)
-    puts message(:prompt_token, player_name, tokens)
+    prompt_token(player_name, tokens)
     token = gets.chomp
     until tokens.include?(token.downcase)
-      puts message(:error_token, player_name)
+      error_token(player_name)
       token = gets.chomp
     end
     tokens.delete(token)
     token.downcase.to_sym
   end
 
-  attr_reader :name, :token
+  attr_accessor :name, :token
 
   def initialize
     @name = nil

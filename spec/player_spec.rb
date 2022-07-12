@@ -51,14 +51,13 @@ describe Player do
 
     context 'when a valid name is given' do
       before do
-        allow(Player).to receive(:puts)
-        allow(Player).to receive(:message).with(:prompt_name, player_num).once
+        allow(Player).to receive(:prompt_name).once
         allow(Player).to receive(:gets).and_return(valid_name)
         allow(Player).to receive(:valid_name?).and_return(true)
       end
 
       it 'should not produce an error message' do
-        expect(Player).not_to receive(:message).with(:error_name, player_num)
+        expect(Player).not_to receive(:error_name)
         Player.select_name(player_num)
       end
 
@@ -69,19 +68,19 @@ describe Player do
 
     context 'when a invalid name is given twice, then a valid name is given' do
       before do
-        allow(Player).to receive(:puts)
-        allow(Player).to receive(:message).once.with(:prompt_name, player_num)
+        # allow(Player).to receive(:puts)
+        allow(Player).to receive(:prompt_name).once
         allow(Player).to receive(:valid_name?).and_return(false, false, true)
         allow(Player).to receive(:gets).and_return(invalid_name, invalid_name, valid_name)
       end
 
       it 'should output an error message twice' do
-        expect(Player).to receive(:message).twice.with(:error_name, player_num)
+        expect(Player).to receive(:error_name).twice
         Player.select_name(player_num)
       end
 
       it 'should return a valid name' do
-        allow(Player).to receive(:message)
+        allow(Player).to receive(:error_name)
         expect(Player.select_name(player_num)).to eq(valid_name)
       end
     end
@@ -94,23 +93,21 @@ describe Player do
       let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
       before do
-        allow(Player).to receive(:puts)
+        allow(Player).to receive(:prompt_token)
         allow(Player).to receive(:gets).and_return('red')
       end
 
       it 'should not receive an error' do
-        expect(Player).not_to receive(:message).with(:error_token, player_name)
+        expect(Player).not_to receive(:error_token)
         Player.select_token_color(player_name)
       end
 
       it 'should return valid token symbol' do
-        allow(Player).to receive(:message)
         allow(tokens).to receive(:include?).and_return(true)
         expect(Player.select_token_color(player_name)).to eq(:red)
       end
 
       it 'should delete the token from the token pool' do
-        allow(Player).to receive(:message)
         allow(tokens).to receive(:include?).and_return(true)
         Player.select_token_color(player_name)
         expect(tokens).to eq(%w[blue yellow green black])
@@ -121,36 +118,26 @@ describe Player do
       let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
       before do
-        allow(Player).to receive(:puts)
-        allow(Player).to receive(:message).once.with(:prompt_token, player_name, tokens)
+        # allow(Player).to receive(:puts)
+        allow(Player).to receive(:prompt_token).once
         allow(Player).to receive(:gets).twice.and_return('donkey', 'red')
         allow(tokens).to receive(:include?).and_return(false, true)
       end
 
       it 'should output an error message once' do
-        expect(Player).to receive(:message).once.with(:error_token, player_name)
+        expect(Player).to receive(:error_token).once
         Player.select_token_color(player_name)
       end
 
       it 'should return a valid token symbol' do
-        allow(Player).to receive(:message)
+        allow(Player).to receive(:error_token).once
         expect(Player.select_token_color(player_name)).to eq(:red)
       end
 
       it 'should delete the token from the token pool' do
-        allow(Player).to receive(:message)
+        allow(Player).to receive(:error_token).once
         Player.select_token_color(player_name)
         expect(tokens).to eq(%w[blue yellow green black])
-      end
-    end
-
-    describe 'meow' do
-      let(:player_name) { 'Rhubarb' }
-
-      it 'should call puts' do
-        allow(Player).to receive(:puts)
-        allow(Player).to receive(:message).with(:error_name, player_name)
-        Player.meow(player_name)
       end
     end
   end
