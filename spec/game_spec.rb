@@ -4,18 +4,23 @@ require 'game'
 
 describe Game do
   subject(:game) { described_class.new }
-  let(:player_class) { class_double(Player) }
-  let(:player_one) { game.players.first }
-  let(:player_two) { game.players.last }
+  let(:player_one) { instance_double(Player) }
+  let(:player_two) { instance_double(Player) }
   let(:board) { instance_double(Board) }
 
-  # before do
-  #   allow($stdout).to receive(:puts)
-  #   allow($stdout).to receive(:write)
-  # end
+  before do
+    game.instance_variable_set(:@board, board)
+    game.instance_variable_set(:@players, [player_one, player_two])
+    #   allow($stdout).to receive(:puts)
+    #   allow($stdout).to receive(:write)
+  end
 
   describe '#input_player_data' do
     before do
+      allow(player_one).to receive(:name=)
+      allow(player_two).to receive(:name=)
+      allow(player_one).to receive(:token=)
+      allow(player_two).to receive(:token=)
       allow(Player).to receive(:select_name).and_return('Rhubarb', 'Muenster')
       allow(Player).to receive(:select_token_color).and_return(:red, :black)
     end
@@ -34,21 +39,25 @@ describe Game do
       end
 
       it 'sets the name and token for player one' do
+        expect(player_one).to receive(:name=).and_return('Rhubarb')
+        expect(player_one).to receive(:token=).and_return(:red)
         game.input_player_data
-        expect(player_one.name).to eq('Rhubarb')
-        expect(player_one.token).to eq(:red)
       end
 
       it 'sets the name and token for player two' do
+        expect(player_two).to receive(:name=).and_return('Muenster')
+        expect(player_two).to receive(:token=).and_return(:black)
         game.input_player_data
-        expect(player_two.name).to eq('Muenster')
-        expect(player_two.token).to eq(:black)
       end
     end
   end
 
   describe '#player_move' do
-    before { allow(game).to receive(:prompt_move) }
+    before do 
+      allow(player_one).to receive(:name)
+      allow(player_two).to receive(:name)
+      allow(game).to receive(:prompt_move)
+    end
 
     context 'when the input is a valid move' do
       before do
@@ -61,7 +70,12 @@ describe Game do
         game.player_move
       end
 
-      it 'returns the input as an integer' do
+      it 'sends #valid_move? to Board' do
+        expect(board).to receive(:valid_move?).once
+        game.player_move
+      end
+
+      it 'returns the correct input as an integer' do
         expect(game.player_move).to eq(7)
       end
     end

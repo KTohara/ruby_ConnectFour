@@ -17,20 +17,23 @@ describe Board do
   ] }
 
   describe '#initialize' do
-    it 'should set @rows to 6' do
-      expect(board.instance_variable_get(:@rows)).to eq(6)
+    it 'should set @grid_rows to 6' do
+      expect(board.grid_rows).to eq(6)
     end
 
-    it 'should set @cols to 7' do
-      expect(board.instance_variable_get(:@cols)).to eq(7)
+    it 'should set @grid_cols to 7' do
+      expect(board.grid_cols).to eq(7)
     end
 
-    it 'creates a nested array with 42 elements' do
-      board_size = board.grid.flatten.length
-      expect(board_size).to eq(42)
+    it 'should set @grid as a 6 x 7 (rows x cols) nested array' do
+      rows = board.grid.size
+      cols = board.grid.first.size
+        
+      expect(rows).to eq(6)
+      expect(cols).to eq(7)
     end
 
-    it 'should all be empty strings' do
+    it '@grid should all be empty strings' do
       board_cells = board.grid.flatten
       expect(board_cells).to all(be_empty)
       expect(board_cells).to all(be_a(String))

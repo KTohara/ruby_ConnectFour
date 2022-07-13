@@ -6,23 +6,23 @@ require_relative 'display'
 class Board
   include Display
 
-  attr_reader :grid, :rows, :cols
+  attr_reader :grid, :grid_rows, :grid_cols
 
   def initialize
-    @rows = 6
-    @cols = 7
-    @grid = Array.new(@rows) { [''] * @cols }
+    @grid_rows = 6
+    @grid_cols = 7
+    @grid = Array.new(@grid_rows) { [''] * @grid_cols }
   end
 
   def add_token(column, token)
     row, col = find_empty_pos(column)
-    @grid[row][col] = token
+    grid[row][col] = token
   end
 
-  def find_empty_pos(num)
-    col = num - 1 # col has to adjust for non-zero index
-    col_check = (0...rows).map { |row| grid[row][col] }
-    return [@rows - 1, col] if col_check.all?(&:empty?)
+  def find_empty_pos(input_num)
+    col = input_num - 1 # col has to adjust for non-zero index
+    col_check = (0...grid_rows).map { |row| grid[row][col] }
+    return [grid_rows - 1, col] if col_check.all?(&:empty?)
     return nil if col_check.none?(&:empty?)
 
     # adjust row by -1 for slot 'above' the last piece
@@ -44,9 +44,9 @@ class Board
   def win?
     return if empty_board?
 
-    cols = grid.transpose
-    diag = diagonal_left(grid) + diagonal_right(grid)
-    four_in_a_row?(grid) || four_in_a_row?(cols) || four_in_a_row?(diag)
+    columns = grid.transpose
+    diagonals = diagonal_left(grid) + diagonal_right(grid)
+    four_in_a_row?(grid) || four_in_a_row?(columns) || four_in_a_row?(diagonals)
   end
 
   def draw?
@@ -58,22 +58,22 @@ class Board
   end
 
   def diagonal_left(matrix)
-    lower = (0...rows - 3).map do |i|
-      (0...rows - i).map { |j| matrix[i + j][j] }
+    lower = (0...grid_rows - 3).map do |i|
+      (0...grid_rows - i).map { |j| matrix[i + j][j] }
     end
-    upper = (1...cols - 3).map do |i|
-      (0...rows - i + 1).map { |j| matrix[j][i + j] }
+    upper = (1...grid_cols - 3).map do |i|
+      (0...grid_rows - i + 1).map { |j| matrix[j][i + j] }
     end
 
     lower + upper
   end
 
   def diagonal_right(matrix)
-    upper = (4..rows).map do |i|
+    upper = (4..grid_rows).map do |i|
       (0...i).map { |j| matrix[i - j - 1][j] }
     end
-    lower = (0...cols - 4).map do |i|
-      (i...rows).map { |j| matrix[j][i - j - 1] }
+    lower = (0...grid_cols - 4).map do |i|
+      (i...grid_rows).map { |j| matrix[j][i - j - 1] }
     end
 
     upper + lower
