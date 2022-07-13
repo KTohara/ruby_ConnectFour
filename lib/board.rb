@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-require 'byebug'
+require_relative 'display'
 
-# logic for board checking
+# Logic for Connect Four board
 class Board
+  include Display
+
   attr_reader :grid, :rows, :cols
 
   def initialize
@@ -28,10 +30,11 @@ class Board
     [row, col]
   end
 
-  def valid_move?(num)
-    return false unless num.match?(/^[1-7]{1}$/)
+  def valid_move?(input)
+    return false unless input.match?(/^[1-7]{1}$/)
 
-    grid.any? { |row| row[num.to_i - 1].empty? }
+    num = input.to_i - 1
+    grid.any? { |row| row[num].empty? }
   end
 
   def game_over?
@@ -84,21 +87,12 @@ class Board
     end
     false
   end
+
+  def to_s
+    board = grid
+            .map { |row| display_rows(row) } # sends to Display
+            .join("\n")
+
+    "#{BORDER_TOP}\n#{board}\n#{BORDER_BOTTOM}"
+  end
 end
-
-# b = Board.new
-# p1 = 'w'
-# p2 = 'p'
-# grid = [
-# [ 0,  1,  2,  3,  4,  5,  6],
-# [ 7,  8,  9, 10, 11, 12, 13],
-# [14, 15, 16, 17, 18, 19, 20],
-# [21, 22, 23, 24, 25, 26, 27],
-# [28, 29, 30, 31, 32, 33, 34],
-# [35, 36, 37, 38, 39, 40, 41]]
-
-# p b.diagonal_left(grid)
-
-# p b.four_in_a_row?(b.diagonal_right(grid))
-# p b.four_in_a_row?(b.diagonal_left(grid))
-# p b.win?

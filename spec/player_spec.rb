@@ -49,9 +49,10 @@ describe Player do
     let(:valid_name) { 'Rhubarb' }
     let(:invalid_name) { 'ⓡⓗⓤⓑⓐⓡⓑ' }
 
+    before { allow(Player).to receive(:prompt_name).once }
+
     context 'when a valid name is given' do
       before do
-        allow(Player).to receive(:prompt_name).once
         allow(Player).to receive(:gets).and_return(valid_name)
         allow(Player).to receive(:valid_name?).and_return(true)
       end
@@ -68,10 +69,8 @@ describe Player do
 
     context 'when a invalid name is given twice, then a valid name is given' do
       before do
-        # allow(Player).to receive(:puts)
-        allow(Player).to receive(:prompt_name).once
-        allow(Player).to receive(:valid_name?).and_return(false, false, true)
         allow(Player).to receive(:gets).and_return(invalid_name, invalid_name, valid_name)
+        allow(Player).to receive(:valid_name?).and_return(false, false, true)
       end
 
       it 'should output an error message twice' do
@@ -93,7 +92,7 @@ describe Player do
       let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
       before do
-        allow(Player).to receive(:prompt_token)
+        allow(Player).to receive(:prompt_token).once
         allow(Player).to receive(:gets).and_return('red')
       end
 
@@ -118,7 +117,6 @@ describe Player do
       let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
       before do
-        # allow(Player).to receive(:puts)
         allow(Player).to receive(:prompt_token).once
         allow(Player).to receive(:gets).twice.and_return('donkey', 'red')
         allow(tokens).to receive(:include?).and_return(false, true)
