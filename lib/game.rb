@@ -21,7 +21,6 @@ class Game
     input_player_data
     game_loop
     game_result
-    replay_game
   end
 
   # sets each player's name and token
