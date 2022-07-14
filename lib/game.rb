@@ -13,7 +13,7 @@ class Game
   def initialize
     @board = Board.new
     @players = [Player.new, Player.new]
-    @current_player = players.sample
+    @current_player = players.first
   end
 
   # main loop script
@@ -27,10 +27,13 @@ class Game
   end
 
   # sets each player's name and token
-  def input_player_data
+  def input_player_data(tokens = %w[red blue yellow green black])
     players.each_with_index do |player, player_num|
-      player.name = Player.select_name(player_num + 1)
-      player.token = Player.select_token_color(player.name)
+      name = Player.select_name(player_num + 1)
+      player.name = name
+      token = Player.select_token_color(player.name, tokens)
+      player.token = token
+      tokens.delete(token.to_s)
     end
   end
 
@@ -81,4 +84,4 @@ class Game
   end
 end
 
-Game.new.play
+Game.new.play if $PROGRAM_NAME == __FILE__

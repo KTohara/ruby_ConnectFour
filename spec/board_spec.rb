@@ -275,6 +275,7 @@ describe Board do
       ['y', 'y', '', '', ''],
       ['', p2, p2, '']
     ] }
+
     it 'returns a nested array with diagonals from right to left' do
       expect(board.diagonal_right(grid)).to match_array(diagonals)
     end

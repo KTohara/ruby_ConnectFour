@@ -84,32 +84,23 @@ describe Player do
 
   describe '.select_token_color' do
     let(:player_name) { 'Rhubarb' }
+    let(:tokens) { %w[red blue yellow green black] }
 
     context 'when a valid token color is picked' do
-      let(:tokens) { player_class.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
-
       before { allow(player_class).to receive(:prompt_token) }
 
       it 'should not receive an error' do
         expect(player_class).not_to receive(:error_token)
-        player_class.select_token_color(player_name, 'red')
+        player_class.select_token_color(player_name, tokens, 'red')
       end
 
       it 'should return valid token symbol' do
         allow(tokens).to receive(:include?).and_return(true)
-        expect(player_class.select_token_color(player_name, 'red')).to eq(:red)
-      end
-
-      it 'should delete the token from the token pool' do
-        allow(tokens).to receive(:include?).and_return(true)
-        player_class.select_token_color(player_name, 'red')
-        expect(tokens).to eq(%w[blue yellow green black])
+        expect(player_class.select_token_color(player_name, tokens, 'red')).to eq(:red)
       end
     end
 
     context 'when the token input is invalid, then valid' do
-      let(:tokens) { player_class.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
-
       before do
         allow(player_class).to receive(:prompt_token).once
         allow(tokens).to receive(:include?).and_return(false, true)
@@ -117,20 +108,13 @@ describe Player do
 
       it 'should output an error message once' do
         expect(player_class).to receive(:error_token).once
-        player_class.select_token_color(player_name, 'donkey')
+        player_class.select_token_color(player_name, tokens, 'donkey')
       end
 
       it 'should return a valid token symbol when the second input is valid' do
         allow(player_class).to receive(:error_token).once
         allow(player_class).to receive(:gets).once.and_return('red')
-        expect(player_class.select_token_color(player_name, 'donkey')).to eq(:red)
-      end
-
-      it 'should delete the token from the token pool' do
-        allow(player_class).to receive(:error_token).once
-        allow(player_class).to receive(:gets).once.and_return('red')
-        player_class.select_token_color(player_name, 'donkey')
-        expect(tokens).to eq(%w[blue yellow green black])
+        expect(player_class.select_token_color(player_name, tokens, 'donkey')).to eq(:red)
       end
     end
   end

@@ -18,6 +18,7 @@ describe Game do
   describe '#input_player_data' do
     let(:p1_no_data) { instance_double(Player, 'Player One') }
     let(:p2_no_data) { instance_double(Player, 'Player Two') }
+    let(:tokens) { %w[red blue yellow green black] }
 
     before do
       game.instance_variable_set(:@players, [p1_no_data, p2_no_data])
@@ -25,6 +26,8 @@ describe Game do
       allow(p2_no_data).to receive(:name)
       allow(p1_no_data).to receive(:name=)
       allow(p2_no_data).to receive(:name=)
+      allow(p1_no_data).to receive(:token)
+      allow(p2_no_data).to receive(:token)
       allow(p1_no_data).to receive(:token=)
       allow(p2_no_data).to receive(:token=)
       allow(player).to receive(:select_name).and_return('Rhubarb', 'Muenster')
@@ -32,6 +35,10 @@ describe Game do
     end
 
     after { game.input_player_data }
+
+    it 'takes in an array of colors as an argument' do
+      expect { game.input_player_data(tokens) }.not_to raise_error
+    end
 
     context 'when a game has two players' do
       it 'should send #select_name to Player' do
@@ -50,6 +57,18 @@ describe Game do
       it 'sets the name and token for player two' do
         expect(p2_no_data).to receive(:name=).and_return('Muenster')
         expect(p2_no_data).to receive(:token=).and_return(:black)
+      end
+    end
+
+    context 'when a player picks a token color' do
+      before do
+        allow(player).to receive(:select_name)
+        allow(player).to receive(:select_token_color).and_return(:red, :black)
+      end
+
+      it 'deletes the token color' do
+        game.input_player_data(tokens)
+        expect(tokens).to eq(%w[blue yellow green])
       end
     end
   end

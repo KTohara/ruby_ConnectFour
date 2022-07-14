@@ -6,12 +6,6 @@ require_relative 'display'
 class Player
   extend Display
 
-  class << self
-    attr_reader :tokens
-  end
-
-  @tokens = %w[red blue yellow green black]
-
   # prompts until name is valid
   def self.select_name(player_num, input = nil)
     prompt_name(player_num)
@@ -29,14 +23,13 @@ class Player
   end
 
   # prompts until color is valid. deletes token from token pool
-  def self.select_token_color(player_name, input = nil)
+  def self.select_token_color(player_name, tokens, input = nil)
     prompt_token(player_name, tokens)
     input ||= gets.chomp
     until tokens.include?(input.downcase)
       error_token(player_name)
       input = gets.chomp
     end
-    tokens.delete(input)
     input.downcase.to_sym
   end
 
