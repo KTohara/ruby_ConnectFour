@@ -3,43 +3,45 @@
 require 'player'
 
 describe Player do
+  subject(:player_class) { described_class }
+
   describe '.valid_name?' do
     context 'when a valid name is given' do
       it 'returns true' do
         input_name = 'hello'
-        expect(Player.valid_name?(input_name)).to be true
+        expect(player_class.valid_name?(input_name)).to be true
       end
     end
 
     context 'when a name contains a space' do
       it 'returns true' do
         input_name = 'hello world'
-        expect(Player.valid_name?(input_name)).to be true
+        expect(player_class.valid_name?(input_name)).to be true
       end
     end
 
     context 'when the input has a number' do
       it 'returns false' do
         input_name = '12345hello'
-        expect(Player.valid_name?(input_name)).to be false
+        expect(player_class.valid_name?(input_name)).to be false
       end
     end
 
     context 'when the input is longer than 12 letters' do
       it 'returns false' do
         input_name = 'hello world my name is rhubarb the cat'
-        expect(Player.valid_name?(input_name)).to be false
+        expect(player_class.valid_name?(input_name)).to be false
       end
     end
 
     context 'when the input contains special characters' do
       it 'returns false' do
         input_name = 'ⓡⓗⓤⓑⓐⓡⓑ'
-        expect(Player.valid_name?(input_name)).to be false
+        expect(player_class.valid_name?(input_name)).to be false
         input_name = 'my_name'
-        expect(Player.valid_name?(input_name)).to be false
+        expect(player_class.valid_name?(input_name)).to be false
         input_name = 'my n@me'
-        expect(Player.valid_name?(input_name)).to be false
+        expect(player_class.valid_name?(input_name)).to be false
       end
     end
   end
@@ -49,38 +51,33 @@ describe Player do
     let(:valid_name) { 'Rhubarb' }
     let(:invalid_name) { 'ⓡⓗⓤⓑⓐⓡⓑ' }
 
-    before { allow(Player).to receive(:prompt_name).once }
+    before { allow(player_class).to receive(:prompt_name).once }
 
     context 'when a valid name is given' do
-      before do
-        allow(Player).to receive(:gets).and_return(valid_name)
-        allow(Player).to receive(:valid_name?).and_return(true)
-      end
+      before { allow(player_class).to receive(:valid_name?).and_return(true) }
 
       it 'should not produce an error message' do
-        expect(Player).not_to receive(:error_name)
-        Player.select_name(player_num)
+        expect(player_class).not_to receive(:error_name)
+        player_class.select_name(player_num, valid_name)
       end
 
       it 'should return the valid name' do
-        expect(Player.select_name(player_num)).to eq(valid_name)
+        expect(player_class.select_name(player_num, 'Rhubarb')).to eq('Rhubarb')
       end
     end
 
-    context 'when a invalid name is given twice, then a valid name is given' do
-      before do
-        allow(Player).to receive(:gets).and_return(invalid_name, invalid_name, valid_name)
-        allow(Player).to receive(:valid_name?).and_return(false, false, true)
+    context 'when the name input is invalid, then valid' do
+      before { allow(player_class).to receive(:valid_name?).and_return(false, true) }
+
+      it 'should output an error message once' do
+        expect(player_class).to receive(:error_name).once
+        player_class.select_name(player_num, invalid_name)
       end
 
-      it 'should output an error message twice' do
-        expect(Player).to receive(:error_name).twice
-        Player.select_name(player_num)
-      end
-
-      it 'should return a valid name' do
-        allow(Player).to receive(:error_name)
-        expect(Player.select_name(player_num)).to eq(valid_name)
+      it 'should return a valid name when the second input is valid' do
+        allow(player_class).to receive(:error_name).once
+        allow(player_class).to receive(:gets).and_return(valid_name)
+        expect(player_class.select_name(player_num)).to eq(valid_name)
       end
     end
   end
@@ -89,52 +86,50 @@ describe Player do
     let(:player_name) { 'Rhubarb' }
 
     context 'when a valid token color is picked' do
-      let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
+      let(:tokens) { player_class.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
-      before do
-        allow(Player).to receive(:prompt_token).once
-        allow(Player).to receive(:gets).and_return('red')
-      end
+      before { allow(player_class).to receive(:prompt_token) }
 
       it 'should not receive an error' do
-        expect(Player).not_to receive(:error_token)
-        Player.select_token_color(player_name)
+        expect(player_class).not_to receive(:error_token)
+        player_class.select_token_color(player_name, 'red')
       end
 
       it 'should return valid token symbol' do
         allow(tokens).to receive(:include?).and_return(true)
-        expect(Player.select_token_color(player_name)).to eq(:red)
+        expect(player_class.select_token_color(player_name, 'red')).to eq(:red)
       end
 
       it 'should delete the token from the token pool' do
         allow(tokens).to receive(:include?).and_return(true)
-        Player.select_token_color(player_name)
+        player_class.select_token_color(player_name, 'red')
         expect(tokens).to eq(%w[blue yellow green black])
       end
     end
 
-    context 'when a invalid token color is picked once, then a valid token' do
-      let(:tokens) { Player.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
+    context 'when the token input is invalid, then valid' do
+      let(:tokens) { player_class.instance_variable_set(:@tokens, %w[red blue yellow green black]) }
 
       before do
-        allow(Player).to receive(:prompt_token).once
-        allow(Player).to receive(:gets).twice.and_return('donkey', 'red')
+        allow(player_class).to receive(:prompt_token).once
         allow(tokens).to receive(:include?).and_return(false, true)
       end
 
       it 'should output an error message once' do
-        expect(Player).to receive(:error_token).once
-        Player.select_token_color(player_name)
+        expect(player_class).to receive(:error_token).once
+        player_class.select_token_color(player_name, 'donkey')
       end
 
-      it 'should return a valid token symbol' do
-        allow(Player).to receive(:error_token).once
-        expect(Player.select_token_color(player_name)).to eq(:red)
+      it 'should return a valid token symbol when the second input is valid' do
+        allow(player_class).to receive(:error_token).once
+        allow(player_class).to receive(:gets).once.and_return('red')
+        expect(player_class.select_token_color(player_name, 'donkey')).to eq(:red)
       end
 
       it 'should delete the token from the token pool' do
-        allow(Player).to receive(:error_token).once
-        Player.select_token_color(player_name)
+        allow(player_class).to receive(:error_token).once
+        allow(player_class).to receive(:gets).once.and_return('red')
+        player_class.select_token_color(player_name, 'donkey')
         expect(tokens).to eq(%w[blue yellow green black])
       end
     end

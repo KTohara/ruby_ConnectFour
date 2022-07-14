@@ -7,36 +7,37 @@ class Player
   extend Display
 
   class << self
-    attr_reader :tokens, :taken_tokens
+    attr_reader :tokens
   end
-
-  MAX_NAME_LENGTH = 12
 
   @tokens = %w[red blue yellow green black]
 
-  def self.select_name(player_num)
+  # prompts until name is valid
+  def self.select_name(player_num, input = nil)
     prompt_name(player_num)
-    name = gets.chomp
-    until Player.valid_name?(name)
+    input ||= gets.chomp
+    until Player.valid_name?(input)
       error_name(player_num)
-      name = gets.chomp
+      input = gets.chomp
     end
-    name
+    input
   end
 
+  # match: any alphabet, space, length between 1-12
   def self.valid_name?(input)
-    input.match?(/^[a-zA-Z ]{1,#{MAX_NAME_LENGTH}}$/)
+    input.match?(/^[a-zA-Z ]{1,12}$/)
   end
 
-  def self.select_token_color(player_name)
+  # prompts until color is valid. deletes token from token pool
+  def self.select_token_color(player_name, input = nil)
     prompt_token(player_name, tokens)
-    token = gets.chomp
-    until tokens.include?(token.downcase)
+    input ||= gets.chomp
+    until tokens.include?(input.downcase)
       error_token(player_name)
-      token = gets.chomp
+      input = gets.chomp
     end
-    tokens.delete(token)
-    token.downcase.to_sym
+    tokens.delete(input)
+    input.downcase.to_sym
   end
 
   attr_accessor :name, :token

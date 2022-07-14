@@ -28,7 +28,7 @@ describe Board do
     it 'should set @grid as a 6 x 7 (rows x cols) nested array' do
       rows = board.grid.size
       cols = board.grid.first.size
-        
+
       expect(rows).to eq(6)
       expect(cols).to eq(7)
     end
