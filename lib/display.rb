@@ -102,7 +102,7 @@ module Display
   end
 
   def prompt_token(player_name, tokens)
-    puts "Select a token, #{player_name}:\n\n#{display_tokens(tokens).join(' ')}"
+    puts "Select a token, #{player_name}:\n\n#{display_tokens(tokens).join(' ')}\n\n"
   end
 
   def error_token(player_name)
