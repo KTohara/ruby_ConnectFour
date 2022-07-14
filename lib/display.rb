@@ -122,7 +122,7 @@ module Display
   end
 
   def error_replay
-    puts "Not a valid choice. Play again?\n(y)es or (n)o"
+    puts "Not a valid choice. Play again?\n(y)es / (n)o"
   end
 
   def winner_message(player_name)

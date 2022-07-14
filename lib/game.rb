@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'board'
-require_relative 'player'
 require_relative 'display'
 
 # Connect Four game loops/play order
@@ -71,17 +69,5 @@ class Game
   def game_result
     board.win? ? winner_message(current_player.name) : draw_message
   end
-
-  # prompt until y or n, starts new game if 'y'
-  def replay_game
-    prompt_replay
-    input = gets.chomp
-    until %(y n).include?(input)
-      error_replay
-      input = gets.chomp
-    end
-    input == 'y' ? Game.new.play : thanks_message
-  end
 end
 
-Game.new.play if $PROGRAM_NAME == __FILE__
